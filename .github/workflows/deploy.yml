@@ -1,0 +1,71 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---- Build API ----
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Publish API
+        run: dotnet publish backend/ToolFinder.Api/ToolFinder.Api.csproj -c Release -r linux-x64 --self-contained false -o out/api
+
+      # ---- Build Frontend ----
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Copy frontend dist to out
+        run: |
+          mkdir -p out/ui
+          cp -R frontend/dist/* out/ui/
+
+      # ---- Join Tailscale ----
+      - name: Tailscale Up
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Tailscale status
+        run: tailscale status
+
+      # ---- SSH to server ----
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # ---- Ship artifacts ----
+      - name: Rsync API to server
+        run: rsync -av --delete out/api/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/tool-finder/incoming/api/
+
+      - name: Rsync frontend to server
+        run: rsync -av --delete out/ui/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/tool-finder/incoming/ui/
+
+      # ---- Deploy ----
+      - name: Run deploy script
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /opt/tool-finder/deploy.sh"
