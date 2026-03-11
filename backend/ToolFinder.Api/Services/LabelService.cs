@@ -53,9 +53,7 @@ public class LabelService
                                     .Column(col =>
                                     {
                                         var qrPng = GenerateQrPng(id, (int)sizePt);
-                                        col.Item()
-                                           .FillAvailable()
-                                           .Image(qrPng);
+                                        col.Item().Image(qrPng);
                                         col.Item()
                                            .AlignCenter()
                                            .Text(id)
