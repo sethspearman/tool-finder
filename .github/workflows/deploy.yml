@@ -18,7 +18,7 @@ jobs:
           dotnet-version: "9.0.x"
 
       - name: Publish API
-        run: dotnet publish backend/ToolFinder.Api/ToolFinder.Api.csproj -c Release -r linux-x64 --self-contained false -o out/api
+        run: dotnet publish backend/ToolFinder.Api/ToolFinder.Api.csproj -c Release -r linux-x64 --self-contained true -o out/api
 
       # ---- Build Frontend ----
       - name: Setup Node

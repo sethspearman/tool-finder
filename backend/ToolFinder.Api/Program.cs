@@ -18,11 +18,18 @@ builder.Services.AddScoped<SyncService>();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://localhost:5173", "http://100.121.229.116")
               .AllowAnyHeader()
               .AllowAnyMethod()));
 
 var app = builder.Build();
+
+// Auto-apply migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
