@@ -18,7 +18,7 @@ export const api = {
     tree: () => request<Location[]>('/locations'),
     get: (id: number) => request<Location>(`/locations/${id}`),
     byQr: (qrCode: string) => request<Location>(`/locations/by-qr/${qrCode}`),
-    create: (body: Omit<Location, 'id' | 'qrCode' | 'children'>) =>
+    create: (body: Omit<Location, 'id' | 'children'> & { qrCode?: string }) =>
       request<Location>('/locations', { method: 'POST', body: JSON.stringify(body) }),
     update: (id: number, body: Omit<Location, 'id' | 'qrCode' | 'children'>) =>
       request<Location>(`/locations/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
