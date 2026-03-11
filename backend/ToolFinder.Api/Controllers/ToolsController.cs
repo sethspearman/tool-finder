@@ -5,7 +5,7 @@ using ToolFinder.Api.Services;
 namespace ToolFinder.Api.Controllers;
 
 [ApiController]
-[Route("tools")]
+[Route("api/tools")]
 public class ToolsController(ToolService toolService) : ControllerBase
 {
     [HttpGet]

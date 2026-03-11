@@ -5,7 +5,7 @@ using ToolFinder.Api.Services;
 namespace ToolFinder.Api.Controllers;
 
 [ApiController]
-[Route("sync")]
+[Route("api/sync")]
 public class SyncController(SyncService syncService) : ControllerBase
 {
     [HttpPost("flush")]

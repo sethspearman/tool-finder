@@ -4,7 +4,7 @@ using ToolFinder.Api.Services;
 namespace ToolFinder.Api.Controllers;
 
 [ApiController]
-[Route("labels")]
+[Route("api/labels")]
 public class LabelsController(LabelService labelService) : ControllerBase
 {
     /// <summary>
