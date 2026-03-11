@@ -66,6 +66,9 @@ jobs:
       - name: Rsync frontend to server
         run: rsync -av --delete out/ui/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/tool-finder/incoming/ui/
 
+      - name: Rsync server config to server
+        run: rsync -av server/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/tool-finder/
+
       # ---- Deploy ----
       - name: Run deploy script
-        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /opt/tool-finder/deploy.sh"
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo bash /opt/tool-finder/deploy.sh"

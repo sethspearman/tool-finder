@@ -19,7 +19,9 @@ builder.Services.AddSingleton<LabelService>();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:5173", "http://100.121.229.116:8090")
+        policy.SetIsOriginAllowed(origin =>
+                  origin.StartsWith("http://localhost") ||
+                  origin.EndsWith(".ts.net"))
               .AllowAnyHeader()
               .AllowAnyMethod()));
 
@@ -39,7 +41,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 

@@ -1,0 +1,15 @@
+[Unit]
+Description=Tool Finder API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/tool-finder/api
+ExecStart=/opt/tool-finder/api/ToolFinder.Api
+Restart=always
+RestartSec=5
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+
+[Install]
+WantedBy=multi-user.target
