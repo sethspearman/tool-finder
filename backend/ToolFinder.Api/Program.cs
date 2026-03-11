@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<ToolService>();
 builder.Services.AddScoped<SyncService>();
+builder.Services.AddSingleton<LabelService>();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>

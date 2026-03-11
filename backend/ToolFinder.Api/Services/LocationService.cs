@@ -28,7 +28,11 @@ public class LocationService(AppDbContext db)
 
     public async Task<LocationDto> CreateAsync(CreateLocationRequest req)
     {
-        var qrCode = Guid.NewGuid().ToString("N");
+        // Use a pre-scanned QR code if provided, otherwise generate a new short ID
+        var qrCode = !string.IsNullOrWhiteSpace(req.QrCode)
+            ? req.QrCode.ToUpper()
+            : IdGenerator.Generate();
+
         var location = new Location
         {
             QrCode = qrCode,

@@ -47,7 +47,9 @@ public class ToolService(AppDbContext db)
     {
         var tool = new Tool
         {
-            BarcodeId = req.BarcodeId,
+            BarcodeId = !string.IsNullOrWhiteSpace(req.BarcodeId)
+                ? req.BarcodeId.ToUpper()
+                : IdGenerator.Generate(),
             DisplayName = req.DisplayName,
             Description = req.Description,
             HandwrittenId = req.HandwrittenId,
@@ -159,7 +161,7 @@ public class ToolService(AppDbContext db)
                     continue;
                 }
 
-                var barcode = Guid.NewGuid().ToString("N");
+                        var barcode = Guid.NewGuid().ToString("N");
                 var tool = new Tool
                 {
                     BarcodeId = barcode,

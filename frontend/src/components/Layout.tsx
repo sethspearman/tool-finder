@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { StatusBar } from './StatusBar'
-import { Menu, X, MapPin, Wrench, ArrowRightLeft, ChevronLeft } from 'lucide-react'
+import { Menu, X, MapPin, Wrench, ArrowRightLeft, ChevronLeft, Printer } from 'lucide-react'
 
 const setupModes = [
   { to: '/location-setup', label: 'Location Setup',  Icon: MapPin,           desc: 'Define your storage hierarchy' },
   { to: '/tool-setup',     label: 'Tool Setup',       Icon: Wrench,           desc: 'Register tools' },
   { to: '/tool-placement', label: 'Tool Placement',   Icon: ArrowRightLeft,   desc: 'Place tools into locations' },
+  { to: '/labels',         label: 'Print Labels',     Icon: Printer,          desc: 'Generate Avery label sheets' },
 ]
 
 export function Layout() {

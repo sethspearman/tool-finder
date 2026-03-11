@@ -16,7 +16,8 @@ public record CreateLocationRequest(
     string Name,
     string? Description,
     string? PhotoUrl,
-    int? ParentLocationId
+    int? ParentLocationId,
+    string? QrCode = null    // pre-scanned from a printed label; generated if omitted
 );
 
 public record UpdateLocationRequest(

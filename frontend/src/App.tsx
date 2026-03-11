@@ -4,6 +4,7 @@ import { LibraryPage } from '@/features/library/LibraryPage'
 import { LocationSetupPage } from '@/features/location-setup/LocationSetupPage'
 import { ToolSetupPage } from '@/features/tool-setup/ToolSetupPage'
 import { ToolPlacementPage } from '@/features/tool-placement/ToolPlacementPage'
+import { LabelsPage } from '@/features/labels/LabelsPage'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="location-setup" element={<LocationSetupPage />} />
           <Route path="tool-setup" element={<ToolSetupPage />} />
           <Route path="tool-placement" element={<ToolPlacementPage />} />
+          <Route path="labels" element={<LabelsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
