@@ -53,12 +53,13 @@ public class LabelService
                                     .Column(col =>
                                     {
                                         var qrPng = GenerateQrPng(id, (int)sizePt);
-                                        col.Item().Image(qrPng);
+                                        col.Item().Height(sizePt - 8).Image(qrPng);
                                         col.Item()
-                                           .AlignCenter()
-                                           .Text(id)
-                                           .FontSize(5)
-                                           .FontFamily(Fonts.Courier);
+                                           .Text(t =>
+                                           {
+                                               t.AlignCenter();
+                                               t.Span(id).FontSize(5).FontFamily(Fonts.Courier);
+                                           });
                                     });
                             }
                         });
@@ -82,8 +83,8 @@ public class LabelService
                 page.Margin(10);
                 page.Content().Column(col =>
                 {
-                    col.Item().Image(qrPng);
-                    col.Item().AlignCenter().Text(id).FontSize(5).FontFamily(Fonts.Courier);
+                    col.Item().Height(sizePt - 8).Image(qrPng);
+                    col.Item().Text(t => { t.AlignCenter(); t.Span(id).FontSize(5).FontFamily(Fonts.Courier); });
                 });
             });
         }).GeneratePdf();
