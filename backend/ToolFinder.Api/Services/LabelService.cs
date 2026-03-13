@@ -13,9 +13,10 @@ public class LabelService
     // Avery 94102: 3/4" square.  9 cols × 12 rows = 108 per sheet
     // Avery 94103: 1" square.    7 cols × 9  rows = 63  per sheet
     // Avery 22806: 2" square.    4 cols × 5  rows = 20  per sheet
-    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) Small   = (54f,  9, 12, 7f,  14f);
-    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) Large   = (72f,  7,  9, 9f,  18f);
-    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) XLarge  = (144f, 4,  5, 14f, 28f);
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve, float Spacing) Small   = (54f,  9, 12, 7f,  14f, 3f);
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve, float Spacing) Large   = (72f,  7,  9, 9f,  18f, 3f);
+    // Avery 22806 labels are edge-to-edge on the sheet — no gap between them
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve, float Spacing) XLarge  = (144f, 4,  5, 14f, 28f, 0f);
 
     public LabelService()
     {
@@ -24,7 +25,7 @@ public class LabelService
 
     public (byte[] Pdf, List<string> Ids) GenerateSheet(int count, LabelSize size)
     {
-        var (sizePt, cols, rows, fontSize, textReserve) = size switch
+        var (sizePt, cols, rows, fontSize, textReserve, spacing) = size switch
         {
             LabelSize.Small   => Small,
             LabelSize.XLarge  => XLarge,
@@ -49,8 +50,8 @@ public class LabelService
                         .Grid(grid =>
                         {
                             grid.Columns(cols);
-                            grid.VerticalSpacing(3);
-                            grid.HorizontalSpacing(3);
+                            grid.VerticalSpacing(spacing);
+                            grid.HorizontalSpacing(spacing);
 
                             foreach (var id in pageIds)
                             {
@@ -79,7 +80,7 @@ public class LabelService
 
     public byte[] GenerateSingleLabel(string id, LabelSize size)
     {
-        var (sizePt, _, _, fontSize, textReserve) = size switch
+        var (sizePt, _, _, fontSize, textReserve, _) = size switch
         {
             LabelSize.Small  => Small,
             LabelSize.XLarge => XLarge,

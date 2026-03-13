@@ -3,10 +3,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Printer } from 'lucide-react'
 
+const PER_SHEET = { xlarge: 20, large: 63, small: 108 } as const
+type LabelSize = keyof typeof PER_SHEET
+
 export function LabelsPage() {
-  const [count, setCount] = useState(20)
-  const [size, setSize] = useState<'small' | 'large' | 'xlarge'>('large')
+  const [size, setSize] = useState<LabelSize>('large')
+  const [count, setCount] = useState(PER_SHEET['large'])
   const [loading, setLoading] = useState(false)
+
+  function selectSize(s: LabelSize) {
+    setSize(s)
+    setCount(PER_SHEET[s])
+  }
 
   async function handleGenerate() {
     setLoading(true)
@@ -42,7 +50,7 @@ export function LabelsPage() {
           <label className="text-sm font-medium">Label size</label>
           <div className="flex gap-2 flex-wrap">
             <button
-              onClick={() => setSize('xlarge')}
+              onClick={() => selectSize('xlarge')}
               className={`flex-1 rounded-lg border p-3 text-sm text-left transition-colors ${
                 size === 'xlarge'
                   ? 'border-primary bg-primary/5 font-medium'
@@ -53,7 +61,7 @@ export function LabelsPage() {
               <p className="text-xs text-muted-foreground">Avery 22806 · 20 per sheet</p>
             </button>
             <button
-              onClick={() => setSize('large')}
+              onClick={() => selectSize('large')}
               className={`flex-1 rounded-lg border p-3 text-sm text-left transition-colors ${
                 size === 'large'
                   ? 'border-primary bg-primary/5 font-medium'
@@ -64,7 +72,7 @@ export function LabelsPage() {
               <p className="text-xs text-muted-foreground">Avery 94103 · 63 per sheet</p>
             </button>
             <button
-              onClick={() => setSize('small')}
+              onClick={() => selectSize('small')}
               className={`flex-1 rounded-lg border p-3 text-sm text-left transition-colors ${
                 size === 'small'
                   ? 'border-primary bg-primary/5 font-medium'
@@ -79,14 +87,25 @@ export function LabelsPage() {
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Number of labels</label>
-          <Input
-            type="number"
-            min={1}
-            max={500}
-            value={count}
-            onChange={e => setCount(Number(e.target.value))}
-            className="w-32"
-          />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCount(c => Math.max(1, c - PER_SHEET[size]))}
+              disabled={count <= PER_SHEET[size]}
+              className="rounded border w-8 h-8 text-lg leading-none hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+            >−</button>
+            <Input
+              type="number"
+              min={1}
+              max={500}
+              value={count}
+              onChange={e => setCount(Number(e.target.value))}
+              className="w-24 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            <button
+              onClick={() => setCount(c => Math.min(500, c + PER_SHEET[size]))}
+              className="rounded border w-8 h-8 text-lg leading-none hover:bg-muted"
+            >+</button>
+          </div>
           <p className="text-xs text-muted-foreground">
             {size === 'xlarge'
               ? `${Math.ceil(count / 20)} sheet(s) — 20 labels per sheet`
