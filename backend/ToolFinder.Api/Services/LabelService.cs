@@ -6,14 +6,16 @@ using ToolFinder.Api.Models;
 
 namespace ToolFinder.Api.Services;
 
-public enum LabelSize { Small, Large }
+public enum LabelSize { Small, Large, XLarge }
 
 public class LabelService
 {
     // Avery 94102: 3/4" square.  9 cols × 12 rows = 108 per sheet
     // Avery 94103: 1" square.    7 cols × 9  rows = 63  per sheet
-    private static readonly (float SizePt, int Cols, int Rows) Small = (54f, 9, 12);
-    private static readonly (float SizePt, int Cols, int Rows) Large = (72f, 7, 9);
+    // Avery 22806: 2" square.    4 cols × 5  rows = 20  per sheet
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) Small   = (54f,  9, 12, 7f,  14f);
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) Large   = (72f,  7,  9, 9f,  18f);
+    private static readonly (float SizePt, int Cols, int Rows, float FontSize, float TextReserve) XLarge  = (144f, 4,  5, 14f, 28f);
 
     public LabelService()
     {
@@ -22,7 +24,12 @@ public class LabelService
 
     public (byte[] Pdf, List<string> Ids) GenerateSheet(int count, LabelSize size)
     {
-        var (sizePt, cols, rows) = size == LabelSize.Small ? Small : Large;
+        var (sizePt, cols, rows, fontSize, textReserve) = size switch
+        {
+            LabelSize.Small   => Small,
+            LabelSize.XLarge  => XLarge,
+            _                 => Large,
+        };
         var ids = Enumerable.Range(0, count).Select(_ => IdGenerator.Generate()).ToList();
 
         var pdf = Document.Create(container =>
@@ -53,12 +60,12 @@ public class LabelService
                                     .Column(col =>
                                     {
                                         var qrPng = GenerateQrPng(id, (int)sizePt);
-                                        col.Item().Height(sizePt - 8).Image(qrPng);
+                                        col.Item().Height(sizePt - textReserve).Image(qrPng);
                                         col.Item()
                                            .Text(t =>
                                            {
                                                t.AlignCenter();
-                                               t.Span(id).FontSize(5).FontFamily(Fonts.Courier);
+                                               t.Span(id).FontSize(fontSize).Bold().FontFamily(Fonts.Courier);
                                            });
                                     });
                             }
@@ -72,7 +79,12 @@ public class LabelService
 
     public byte[] GenerateSingleLabel(string id, LabelSize size)
     {
-        var sizePt = size == LabelSize.Small ? Small.SizePt : Large.SizePt;
+        var (sizePt, _, _, fontSize, textReserve) = size switch
+        {
+            LabelSize.Small  => Small,
+            LabelSize.XLarge => XLarge,
+            _                => Large,
+        };
         var qrPng = GenerateQrPng(id, (int)sizePt);
 
         return Document.Create(container =>
@@ -83,8 +95,8 @@ public class LabelService
                 page.Margin(10);
                 page.Content().Column(col =>
                 {
-                    col.Item().Height(sizePt - 8).Image(qrPng);
-                    col.Item().Text(t => { t.AlignCenter(); t.Span(id).FontSize(5).FontFamily(Fonts.Courier); });
+                    col.Item().Height(sizePt - textReserve).Image(qrPng);
+                    col.Item().Text(t => { t.AlignCenter(); t.Span(id).FontSize(fontSize).Bold().FontFamily(Fonts.Courier); });
                 });
             });
         }).GeneratePdf();

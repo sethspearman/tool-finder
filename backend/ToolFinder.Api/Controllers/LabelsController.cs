@@ -9,7 +9,7 @@ public class LabelsController(LabelService labelService) : ControllerBase
 {
     /// <summary>
     /// Generate a print-ready PDF sheet of blank labels.
-    /// size: "small" = Avery 94102 (3/4"), "large" = Avery 94103 (1")
+    /// size: "small" = Avery 94102 (3/4"), "large" = Avery 94103 (1"), "xlarge" = Avery 22806 (2")
     /// </summary>
     [HttpPost("generate")]
     public IActionResult Generate([FromQuery] int count = 20, [FromQuery] string size = "large")
@@ -17,7 +17,7 @@ public class LabelsController(LabelService labelService) : ControllerBase
         if (count < 1 || count > 500)
             return BadRequest("count must be between 1 and 500");
 
-        var labelSize = size.ToLower() == "small" ? LabelSize.Small : LabelSize.Large;
+        var labelSize = size.ToLower() switch { "small" => LabelSize.Small, "xlarge" => LabelSize.XLarge, _ => LabelSize.Large };
         var (pdf, ids) = labelService.GenerateSheet(count, labelSize);
 
         Response.Headers["X-Generated-Ids"] = string.Join(",", ids);
@@ -31,7 +31,7 @@ public class LabelsController(LabelService labelService) : ControllerBase
         if (string.IsNullOrWhiteSpace(id))
             return BadRequest("id is required");
 
-        var labelSize = size.ToLower() == "small" ? LabelSize.Small : LabelSize.Large;
+        var labelSize = size.ToLower() switch { "small" => LabelSize.Small, "xlarge" => LabelSize.XLarge, _ => LabelSize.Large };
         var pdf = labelService.GenerateSingleLabel(id.ToUpper(), labelSize);
         return File(pdf, "application/pdf", $"label-{id}.pdf");
     }

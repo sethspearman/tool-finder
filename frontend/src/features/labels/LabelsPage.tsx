@@ -5,7 +5,7 @@ import { Printer } from 'lucide-react'
 
 export function LabelsPage() {
   const [count, setCount] = useState(20)
-  const [size, setSize] = useState<'small' | 'large'>('large')
+  const [size, setSize] = useState<'small' | 'large' | 'xlarge'>('large')
   const [loading, setLoading] = useState(false)
 
   async function handleGenerate() {
@@ -40,7 +40,18 @@ export function LabelsPage() {
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Label size</label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setSize('xlarge')}
+              className={`flex-1 rounded-lg border p-3 text-sm text-left transition-colors ${
+                size === 'xlarge'
+                  ? 'border-primary bg-primary/5 font-medium'
+                  : 'hover:bg-muted'
+              }`}
+            >
+              <p className="font-medium">X-Large — 2" square</p>
+              <p className="text-xs text-muted-foreground">Avery 22806 · 20 per sheet</p>
+            </button>
             <button
               onClick={() => setSize('large')}
               className={`flex-1 rounded-lg border p-3 text-sm text-left transition-colors ${
@@ -50,7 +61,7 @@ export function LabelsPage() {
               }`}
             >
               <p className="font-medium">Large — 1" square</p>
-              <p className="text-xs text-muted-foreground">Avery 94103 · For locations</p>
+              <p className="text-xs text-muted-foreground">Avery 94103 · 63 per sheet</p>
             </button>
             <button
               onClick={() => setSize('small')}
@@ -61,7 +72,7 @@ export function LabelsPage() {
               }`}
             >
               <p className="font-medium">Small — 3/4" square</p>
-              <p className="text-xs text-muted-foreground">Avery 94102 · For tools</p>
+              <p className="text-xs text-muted-foreground">Avery 94102 · 108 per sheet</p>
             </button>
           </div>
         </div>
@@ -77,7 +88,9 @@ export function LabelsPage() {
             className="w-32"
           />
           <p className="text-xs text-muted-foreground">
-            {size === 'large'
+            {size === 'xlarge'
+              ? `${Math.ceil(count / 20)} sheet(s) — 20 labels per sheet`
+              : size === 'large'
               ? `${Math.ceil(count / 63)} sheet(s) — 63 labels per sheet`
               : `${Math.ceil(count / 108)} sheet(s) — 108 labels per sheet`}
           </p>
@@ -92,7 +105,7 @@ export function LabelsPage() {
       <div className="rounded-xl border bg-muted/40 p-4 flex flex-col gap-2">
         <p className="text-sm font-medium">How to use</p>
         <ol className="text-sm text-muted-foreground flex flex-col gap-1 list-decimal list-inside">
-          <li>Print this PDF on Avery {size === 'large' ? '94103' : '94102'} label sheets</li>
+          <li>Print this PDF on Avery {size === 'xlarge' ? '22806' : size === 'large' ? '94103' : '94102'} label sheets</li>
           <li>Affix labels to your physical locations or tools</li>
           <li>Open <strong>Location Setup</strong> and tap <strong>Scan to add</strong> to scan each location label and give it a name</li>
           <li>Open <strong>Tool Setup</strong> and tap <strong>Scan to add</strong> to register each tool</li>
