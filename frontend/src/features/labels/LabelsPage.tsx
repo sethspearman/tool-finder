@@ -8,7 +8,7 @@ type LabelSize = keyof typeof PER_SHEET
 
 export function LabelsPage() {
   const [size, setSize] = useState<LabelSize>('large')
-  const [count, setCount] = useState(PER_SHEET['large'])
+  const [count, setCount] = useState<number>(PER_SHEET['large'])
   const [loading, setLoading] = useState(false)
 
   function selectSize(s: LabelSize) {
